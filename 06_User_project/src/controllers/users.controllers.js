@@ -1,19 +1,82 @@
 
 import { asyncHnadler } from "../utils/asyncHandler.js";
+import {ApiError} from "../utils/ApiError.js"
+import {user} from "../models/User.models.js"
+import {uploadonClouninary} from "../utils/Cloudinary.js"
+import { ApiResponse } from "../utils/ApiResponse.js";
 
 const registerUser = asyncHnadler(async(req, res)=>{
-    res.status(200).json({
-        message: "Chal gaya Bhia tera code",
+    // get the user data from the frontend
+    // validate = check if input are not empty
+    // check if user is not already exist : using (username and email)
+    // chaeck for image and avtar is successfully upload on cloudnary
+    // upload them to cloudinary : avtaer
+    // create user object : create entry in db
+    // remove the passwore and refresh token field from response
+    // check for user creation 
+    // return response
+
+    const {fullname, username, email, password} = req.body
+    console.log('email :', email );
+
+    if(
+        [fullname, username, email, password].some((field)=>
+        field?.trim() === ""
+        )
+    ){ 
+        throw new ApiError(400, "All fields are required")
+    }
+
+    const existedUser = user.findOne({
+        $or: [{ username } , { email }]
     })
+
+    if(existedUser){
+        throw new ApiError(409, "user with this email and username is already exist")
+    }
+
+
+    const avtarLocalPath = req.files?.avtar[0]?.path;
+    const coverImageLocalPath = req.files?.coverImage[0]?.path
+
+    if(!avtarLocalPath){
+        throw new ApiError(400, " avtar file is required")
+    }
+    
+    const avtar = await uploadonClouninary(avtarLocalPath)
+    const coverImage = await uploadonClouninary(coverImageLocalPath)
+
+    if(!avtar){
+        throw new ApiError(400, "Avtar file is not uploaded successfully")
+
+    }
+    const user = await user.create({
+        fullname,
+        avtar: avtar.url,
+        coverImage: coverImage?.url || "",
+        email,
+        password, 
+        username: username.toLowerCase()
+    })
+
+   const createdUser =  await user.findById(user._id).select(
+        "-password -refreshToken"   // this fiel remove the password and refreshToken form the response
+   )
+
+   if(!createdUser){
+    throw new ApiError(500, "something went wrong while registring the user")
+   }
+
+   return res.status(201).json(
+    new ApiResponse(200, createdUser, "user registered successfully")
+   )
+
+
+
 })
+
+
 
 export { registerUser, } 
 
 
-// echo "# Backend-MERN-" >> README.md
-// git init
-// git add README.md
-// git commit -m "first commit"
-// git branch -M main
-// git remote add origin https://github.com/Rajan-sharma-0/Backend-MERN-.git
-// git push -u origin main
