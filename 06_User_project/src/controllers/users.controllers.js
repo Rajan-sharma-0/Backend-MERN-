@@ -1,8 +1,7 @@
-
 import { asyncHnadler } from "../utils/asyncHandler.js";
 import {ApiError} from "../utils/ApiError.js"
 import {user} from "../models/User.models.js"
-import {uploadonClouninary} from "../utils/Cloudinary.js"
+import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 const registerUser = asyncHnadler(async(req, res)=>{
@@ -16,18 +15,18 @@ const registerUser = asyncHnadler(async(req, res)=>{
     // check for user creation 
     // return response
 
-    const {fullname, username, email, password} = req.body
+    const {fullName, username, email, password} = req.body
     console.log('email :', email );
 
     if(
-        [fullname, username, email, password].some((field)=>
+        [fullName, username, email, password].some((field)=>
         field?.trim() === ""
         )
     ){ 
         throw new ApiError(400, "All fields are required")
     }
 
-    const existedUser = user.findOne({
+    const existedUser = await user.findOne({
         $or: [{ username } , { email }]
     })
 
@@ -36,22 +35,22 @@ const registerUser = asyncHnadler(async(req, res)=>{
     }
 
 
-    const avtarLocalPath = req.files?.avtar[0]?.path;
-    const coverImageLocalPath = req.files?.coverImage[0]?.path
+    const avtarLocalPath = req.files?.avtar?.[0]?.path;
+    const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
 
     if(!avtarLocalPath){
-        throw new ApiError(400, " avtar file is required")
+        throw new ApiError(400, "avtar file is required")
     }
-    
-    const avtar = await uploadonClouninary(avtarLocalPath)
-    const coverImage = await uploadonClouninary(coverImageLocalPath)
+
+    const avtar = await uploadOnCloudinary(avtarLocalPath)
+    const coverImage = await uploadOnCloudinary(coverImageLocalPath)
 
     if(!avtar){
-        throw new ApiError(400, "Avtar file is not uploaded successfully")
-
+        throw new ApiError(400, "avtar file is not uploaded successfully")
     }
-    const user = await user.create({
-        fullname,
+
+    const newuser = await user.create({
+        fullName,
         avtar: avtar.url,
         coverImage: coverImage?.url || "",
         email,
@@ -59,7 +58,7 @@ const registerUser = asyncHnadler(async(req, res)=>{
         username: username.toLowerCase()
     })
 
-   const createdUser =  await user.findById(user._id).select(
+   const createdUser =  await user.findById(newuser._id).select(
         "-password -refreshToken"   // this fiel remove the password and refreshToken form the response
    )
 
@@ -77,6 +76,6 @@ const registerUser = asyncHnadler(async(req, res)=>{
 
 
 
-export { registerUser, } 
+export { registerUser, }
 
 
