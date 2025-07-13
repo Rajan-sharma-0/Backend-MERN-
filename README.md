@@ -16,12 +16,12 @@ Welcome to the **MyApp Backend**, a fully functional RESTful API built with **No
 - [🔐 Authentication Flow](#-authentication-flow)
 - [💻 Code Examples](#-code-examples)
 - [🧪 Postman Collection](#-postman-collection)
-- [🐞 Troubleshooting](#-troubleshooting)
+- [🐞 Troubleshooting](#-troubleshooting)  
 - [📄 License](#-license)
 - [👨‍💻 Author](#-author)
 
 ---
-
+    
 ## 📦 Features
 
 - ✅ User registration and login (JWT)
