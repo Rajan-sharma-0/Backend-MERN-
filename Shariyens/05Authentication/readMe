@@ -1,0 +1,36 @@
+/*
+For Authentication following things are handled in this process
+  1 Cookies
+  2 Incriptin and decriptio
+
+*/
+
+
+/*
+For store cookies
+
+
+ import cookieParser from 'cookie-parser'
+ app.use(cookieParser())
+
+ app.get('/', function(req, res){
+     res.cookie("name", "Rajan")
+     res.send('done')
+ })
+
+
+*/
+
+/*
+For Incripton
+
+import bcrypt from "bcrypt";
+app.get("/", function (req, res) {
+  bcrypt.genSalt(10, function (err, salt) {
+    bcrypt.hash("helloo", salt, function (err, hash) {
+      console.log(hash);
+    });
+  });
+});
+
+*/
