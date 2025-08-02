@@ -13,16 +13,9 @@ app.get("/create", async function(req, res){
    let createuser = await usermodule.create({
        name: "Rajan",
        email: "rajan@gmail.com",
-       userName: "rajan",
+       userName: "Rajan_sharma_0",
     })
     res.send(createuser)
-})
-
-
-app.get("/update", async function(req, res){
-//    usermodule.findOneAndUpdate(findone, update, {new: true})
-        let update = await usermodule.findOneAndUpdate({userName:'nishant'}, {userName:"gopal", name: "nishant", }, {new:true})
-        res.send(update)
 })
 
 
@@ -33,6 +26,14 @@ app.get("/read", async function(req, res){
         let read = await usermodule.find()
         res.send(read)
 })
+
+app.get("/update", async function(req, res){
+//    usermodule.findOneAndUpdate(findone, update, {new: true})
+        let update = await usermodule.findOneAndUpdate({userName:'nishant'}, {userName:"gopal", name: "nishant", }, {new:true})
+        res.send(update)
+})
+
+
 
 app.get("/delete", async function(req, res){
     let deleteUser = await usermodule.findOneAndDelete({userName:"gopal"})
